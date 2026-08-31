@@ -2,10 +2,131 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Beam Animation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #000000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .stage {
+            position: relative;
+            width: min(960px, 100vw);
+            aspect-ratio: 16 / 9;
+            height: auto;
+            background-color: #000000;
+            overflow: hidden;
+            border: 1px solid #222;
+        }
+
+        .character-img {
+            position: absolute;
+            left: 38.5417%;
+            bottom: 22.2222%;
+            width: 22.9167%;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(-360%);
+            animation: character-drop 2s cubic-bezier(.18,.82,.28,1) forwards;
+        }
+
+        #beam-video {
+            position: absolute;
+            left: -10.1042%;
+            top: 33.8889%;
+            width: 70.8333%;
+            height: auto;
+            z-index: 2;
+            display: none;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        .final-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            display: none;
+            object-fit: cover;
+            background: #000;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        @keyframes character-drop {
+            0% {
+                opacity: 0;
+                transform: translateY(-360%) rotate(-8deg);
+            }
+            12% { opacity: 1; }
+            76% { transform: translateY(20px) rotate(3deg); }
+            89% { transform: translateY(-12px) rotate(-1deg); }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotate(0);
+            }
+        }
+    </style>
 </head>
 <body>
-    
+
+    <div class="stage">
+        <img src="tikuwa.png" alt="キャラクター" class="character-img">
+
+        <video id="beam-video" muted playsinline preload="auto">
+            <source src="beam.mp4" type="video/mp4">
+        </video>
+
+        <video id="final-video" class="final-video" muted playsinline>
+            <source src="kill.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <script>
+        const beamVideo = document.getElementById('beam-video');
+        const finalVideo = document.getElementById('final-video');
+
+        async function startBeam() {
+            beamVideo.style.display = 'block';
+            beamVideo.currentTime = 0;
+            try {
+                await beamVideo.play();
+            } catch (error) {
+                beamVideo.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('load', () => {
+            window.setTimeout(startBeam, 2050);
+        });
+
+        beamVideo.addEventListener('ended', async () => {
+            beamVideo.style.display = 'none';
+            finalVideo.style.display = 'block';
+            finalVideo.currentTime = 0;
+            try {
+                await finalVideo.play();
+            } catch (error) {
+                finalVideo.style.display = 'none';
+            }
+        });
+
+        finalVideo.addEventListener('ended', () => {
+            finalVideo.style.display = 'none';
+        });
+    </script>
+
 </body>
 </html>
