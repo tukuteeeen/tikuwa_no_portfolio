@@ -26,6 +26,7 @@
             background-color: #000000;
             overflow: hidden;
             border: 1px solid #222;
+            cursor: crosshair;
         }
 
         .character-img {
@@ -41,7 +42,7 @@
 
         #beam-video {
             position: absolute;
-            left: -10.1042%;
+            left: -7.6%;
             top: 33.8889%;
             width: 70.8333%;
             height: auto;
@@ -49,6 +50,9 @@
             display: none;
             mix-blend-mode: screen;
             pointer-events: none;
+            transform: rotate(0deg);
+            transform-origin: 81.25% 51.8%;
+            will-change: transform;
         }
 
         .final-video {
@@ -97,6 +101,21 @@
     <script>
         const beamVideo = document.getElementById('beam-video');
         const finalVideo = document.getElementById('final-video');
+        const stage = document.querySelector('.stage');
+
+        function pointBeamAt(pointerX, pointerY) {
+            const stageRect = stage.getBoundingClientRect();
+            const mouthX = stageRect.left + stageRect.width * 0.5;
+            const mouthY = stageRect.top + stageRect.height * 0.706;
+            const targetAngle = Math.atan2(pointerY - mouthY, pointerX - mouthX) * 180 / Math.PI;
+
+            // 素材は初期状態で左向きのため、マウス方向との差分だけ回転する。
+            beamVideo.style.transform = `rotate(${targetAngle - 180}deg)`;
+        }
+
+        stage.addEventListener('pointermove', (event) => {
+            pointBeamAt(event.clientX, event.clientY);
+        });
 
         async function startBeam() {
             beamVideo.style.display = 'block';
